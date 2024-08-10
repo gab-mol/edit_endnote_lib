@@ -1,9 +1,9 @@
-from crossref.restful import Works
+# from crossref.restful import Works
 from habanero import Crossref
 import pandas as pd
 from requests import exceptions
 cr = Crossref()
-works = Works()
+# works = Works()
 
 
 def buscar_doi_v0(titulo:str, nitems=1, siml=.8, terminal=False) -> dict | None:

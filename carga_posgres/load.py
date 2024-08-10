@@ -6,20 +6,23 @@ import psycopg2 as db
 
 import pandas as pd
 
-conn = db.connect(
-    dbname="endnote_refs",
-    user="editor_en",
-    password="editarend24",
-    host="localhost",
-    port="5432"
-)
+def connec():
+    '''Conexión con base de datos de referencias.'''
+    conn = db.connect(
+        dbname="endnote_refs",
+        user="editor_en",
+        password="editarend24",
+        host="localhost",
+        port="5432"
+    )
+    return conn
 
 TABLA = "referencias"
 ESQUEMA = "endnote"
 
-cur = conn.cursor()
+# cur = conn.cursor()
 
-def tabla_referencias():
+def tabla_referencias(conn):
     '''
     Crea tabla destino de los datos,
     si esta no existe.
@@ -28,8 +31,9 @@ def tabla_referencias():
         **Esquema**: 'endnote'
 
     '''
+    cur = conn.cursor()
     cur.execute(f'''
-        CREATE TABLE IF NOT EXISTS {ESQUEMA}.{TABLA} (
+        CREATE TABLE IF NOT EXISTS {ESQUEMA}.{TABLA} ( 
             nregistro INTEGER NOT NULL PRIMARY KEY,        
             autores VARCHAR(3228),
             año VARCHAR(154),
@@ -50,10 +54,12 @@ def tabla_referencias():
         );'''
     )
     conn.commit()
+    print(f"COMMIT >CREATE TABLE IF NOT EXISTS {ESQUEMA}.{TABLA}<")
 
 # CARGA
 
-def load_all(df:pd.DataFrame, ver_q=False):
+def load_all(conn, df:pd.DataFrame, ver_q=False):
+    cur = conn.cursor()
     data = list()
 
     for i, fila in df.iterrows():
@@ -73,7 +79,8 @@ def load_all(df:pd.DataFrame, ver_q=False):
     cur.execute(query)
     conn.commit()
 
-def load_to(df:pd.DataFrame,esquema:str, tabla:str, ver_q=False):
+def load_to(conn, df:pd.DataFrame,esquema:str, tabla:str, ver_q=False):
+    cur = conn.cursor()
     data = list()
 
     for i, fila in df.iterrows():
@@ -98,7 +105,7 @@ def load_to(df:pd.DataFrame,esquema:str, tabla:str, ver_q=False):
 
 
 
-def query_sql(query:str, cerrar=False):
+def query_sql(conn, query:str, cerrar=False):
     '''Envoltura de métodos de `psycopg2` para
     ejecución de consultas y retorno de datos.
 
@@ -111,6 +118,7 @@ def query_sql(query:str, cerrar=False):
     `list[tuple]` (cada una es un registro/fila)
 
     '''
+    cur = conn.cursor()
     cur.execute(query)
     conn.commit()
     resp = cur.fetchall()
@@ -143,3 +151,8 @@ def registros_a_df(registros:list[tuple], cols:list[str]) -> pd.DataFrame:
 
     return pd.DataFrame(data)
 
+
+
+if __name__ == "__main__":
+
+    tabla_referencias()

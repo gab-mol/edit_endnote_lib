@@ -2,6 +2,8 @@ import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
 import pandas as pd
 from pprint import pprint
+from xml.dom import minidom
+
 
 # Extracción
 def extr_opc1(root):
@@ -300,31 +302,70 @@ def largos(df):
         lambda col: col.astype(str).apply(len).max())
     print(max_lengths)
 
-def modif(path:str):
+def xml_doi(path:str):
+    '''
+    Agregar la etiqueta correspondiente al doi* a los
+    registros que lo requieren en
+    ".//record/electronic-resource-num/style":
+
+    `<electronic-resource-num>`  
+    `   <style face="normal" font="default" size="100%">*</style>`  
+    `</electronic-resource-num>`  
+    '''
     tree = ET.parse(path)
     root = tree.getroot()
-    print(root)
-    print("...")
-# Iterar sobre cada record
-    # for record in root.findall('.//record'):
-    #     # Buscar la etiqueta 'electronic-resource-num'
-    #     electronic_resource_num = record.find('electronic-resource-num')
 
-    #     # Si 'electronic-resource-num' no existe, la creamos
-    #     if electronic_resource_num is None:
-    #         electronic_resource_num = ET.SubElement(record, 'electronic-resource-num')
+    # Cargar el archivo XML
+    tree = ET.parse(path)
+    root = tree.getroot()
+
+    # Iterar sobre todos los elementos <book> en el XML
+    for book in root.findall('.//book'):
+        # Verificar si el elemento <isbn> existe
+        isbn = book.find('isbn')
         
-    #     # Buscar la etiqueta 'style' dentro de 'electronic-resource-num'
-    #     style = electronic_resource_num.find('style')
-
-    #     # Si 'style' no existe, la creamos y le asignamos un texto
-    #     if style is None:
-    #         style = ET.SubElement(electronic_resource_num, 'style')
-    #         style.text = 'Texto que quieres agregar'
+        if isbn is None:
+            # Si no existe, agregar la etiqueta <isbn> con un valor predeterminado
+            new_isbn = ET.Element('isbn')
+            new_isbn.text = 'Sin ISBN'
+            book.append(new_isbn)
 
     # Guardar el archivo XML modificado
-    # tree.write('archivo_modificado.xml', encoding='utf-8', xml_declaration=True)
+    tree.write('extraer_desde_xml/mod_pr.xml', encoding='utf-8', xml_declaration=True)
 
 if __name__ == "__main__":
-    # probar con error.xml
-    modif("extraer_desde_xml/error.xml")
+
+    # PRUEBAS MANIPIULACIÓN DE ARCHIVOS XML
+
+    tree = ET.parse("extraer_desde_xml/mod_pr.xml")
+    root = tree.getroot()
+
+    for b in root.findall('.//book'):
+        print(b.find('title').text)
+        isbn = b.find('isbn')
+        if isbn is not None:
+            print("\t",isbn.text)
+            isbn.set("atr_n0","valor atrn00")
+            isbn.set("atr_n1","valor atrn11")
+            isbn.set("atr_n2","valor atrn22")
+        else:
+            print("\tno isbn")
+
+        xml_str = ET.tostring(root, encoding='utf-8')
+        parsed_xml = minidom.parseString(xml_str)
+        pretty_xml_str = parsed_xml.toprettyxml(indent="  ")
+        with open("extraer_desde_xml/mod_pr2.xml", "w", encoding='utf-8') as f:
+            f.write(pretty_xml_str)
+
+    # tree.write('extraer_desde_xml/mod_pr2.xml', encoding='utf-8', xml_declaration=True)
+
+    # # Usar minidom para formatear el XML
+    # with open("extraer_desde_xml/Endnote 09-08-24.xml", 'r', encoding='utf-8') as file:
+    #     xml_str = file.read()
+
+    # parsed_xml = minidom.parseString(xml_str)
+    # formatted_xml = parsed_xml.toprettyxml(indent="  ")
+
+    # # Guardar el XML formateado en el archivo final
+    # with open('extraer_desde_xml/Endnote 09-08-24 MOD.xml', 'w', encoding='utf-8') as file:
+    #     file.write(formatted_xml)

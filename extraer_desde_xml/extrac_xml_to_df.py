@@ -299,3 +299,32 @@ def largos(df):
     max_lengths = df.apply(
         lambda col: col.astype(str).apply(len).max())
     print(max_lengths)
+
+def modif(path:str):
+    tree = ET.parse(path)
+    root = tree.getroot()
+    print(root)
+    print("...")
+# Iterar sobre cada record
+    # for record in root.findall('.//record'):
+    #     # Buscar la etiqueta 'electronic-resource-num'
+    #     electronic_resource_num = record.find('electronic-resource-num')
+
+    #     # Si 'electronic-resource-num' no existe, la creamos
+    #     if electronic_resource_num is None:
+    #         electronic_resource_num = ET.SubElement(record, 'electronic-resource-num')
+        
+    #     # Buscar la etiqueta 'style' dentro de 'electronic-resource-num'
+    #     style = electronic_resource_num.find('style')
+
+    #     # Si 'style' no existe, la creamos y le asignamos un texto
+    #     if style is None:
+    #         style = ET.SubElement(electronic_resource_num, 'style')
+    #         style.text = 'Texto que quieres agregar'
+
+    # Guardar el archivo XML modificado
+    # tree.write('archivo_modificado.xml', encoding='utf-8', xml_declaration=True)
+
+if __name__ == "__main__":
+    # probar con error.xml
+    modif("extraer_desde_xml/error.xml")

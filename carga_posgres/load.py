@@ -121,10 +121,15 @@ def query_sql(conn, query:str, cerrar=False):
     cur = conn.cursor()
     cur.execute(query)
     conn.commit()
-    resp = cur.fetchall()
-
-    if cerrar:
-        conn.close()    
+    
+    try:
+        resp = cur.fetchall()
+        return resp
+    except:
+        print("!!!  no results to fetch")
+        resp = None
+    
+    if cerrar: conn.close()    
 
     return resp
 
@@ -155,4 +160,11 @@ def registros_a_df(registros:list[tuple], cols:list[str]) -> pd.DataFrame:
 
 if __name__ == "__main__":
 
-    tabla_referencias()
+    query_sql(connec(),'''
+        create table if not exists endnote.busq_doi_todo (
+            nregistro INTEGER NOT NULL PRIMARY KEY,        
+            titulo VARCHAR(440),
+            doi_nuevo VARCHAR(125)
+            );''', 
+            cerrar = False
+    )

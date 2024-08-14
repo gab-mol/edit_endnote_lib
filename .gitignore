@@ -1,6 +1,7 @@
 __pycache__
 journals
 prueba_generar
+*.Data
 *.csv
 *.xml
 log_*.txt

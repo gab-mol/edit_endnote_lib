@@ -29,4 +29,4 @@ Inicialmente se probó la generación de `.enw` para cada registro (Endnote los 
     </electronic-resource-num>
 ```
 
-Luego se empleó la función de importación para generar la biblioteca 
+Luego se empleó la funcionalidad de importación de Endnote para generar la biblioteca actualizada.

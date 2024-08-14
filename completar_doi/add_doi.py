@@ -1,9 +1,7 @@
-# from crossref.restful import Works
 from habanero import Crossref
-import pandas as pd
-from requests import exceptions
+# import pandas as pd
+
 cr = Crossref()
-# works = Works()
 
 
 def buscar_doi_v0(titulo:str, nitems=1, siml=.8, terminal=False) -> dict | None:
@@ -24,7 +22,7 @@ def buscar_doi_v0(titulo:str, nitems=1, siml=.8, terminal=False) -> dict | None:
     ### return 
         `dict` con datos disponibles | `None`
     '''
-    if terminal: print("\n# BUSCAR:", titulo,"#\n")
+    if terminal: print("\n# BUSCAR:", titulo,"#")
     res = cr.works(query = titulo)
     items = res['message']['items']
 
@@ -35,20 +33,15 @@ def buscar_doi_v0(titulo:str, nitems=1, siml=.8, terminal=False) -> dict | None:
     titles = list()
 
     for i in range(nitems):
-        # print("\nitem", i)
         it = items[i]
         keys = list(it.keys())
-        # if 'author' in keys: print(it['author'][0]['family'])
-        # if 'publisher' in keys: print(it['publisher'])
-        # if 'deposited' in keys: print(it['deposited']['date-parts'][0][0])
+
         if 'title' in keys:
             t = it['title'][0]
-            # print(t)
             titles.append(t)
-        # if 'DOI' in keys: print(it['DOI'])
 
-    # buscar el primer título con 90% de similitud
     parecido = list()
+
     # eliminar puntos y mayus del registro, bajan espuriamente la similitud
     tit_s = set(titulo.replace(".", "").lower().split())
     ntit = len(tit_s)
@@ -114,12 +107,4 @@ def verificar_doi(doi:str) -> str:
     item = res['message']['title']
 
     return item[0]
-
-
-if __name__ == "__main__":
-    # pruebas
-    # titulo = "Effects of Reduced Rates of Two Insecticides on Enzyme Activity and Mortality of an Aphid and Its Lacewing Predator"
-    # buscar_doi_v0(titulo=titulo, nitems=10, terminal=True)
-
-    d = verificar_doi("10.5694/j.1326-5377.2003.tb05640.x")
-    print(d)
+  

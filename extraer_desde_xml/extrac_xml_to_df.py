@@ -7,7 +7,8 @@ import re
 
 # Extracción
 def extr_opc1(root):
-    '''Para practicar usando la impresión por terminal y pprint'''
+    '''DEPRECATED
+    Para practicar usando la impresión por terminal y pprint'''
     registros = list()
     for item in root.iter('record'):
         registro = dict()
@@ -125,10 +126,13 @@ def extr_opc1(root):
     print("n° registros:",len(registros))
 
 def extr_opc2(path:str) -> pd.DataFrame:
-    '''Extracción y conversión a pandas.Dataframe.
+    '''Extracción y conversión a `pandas.Dataframe`.
     
-    ### Parámetro
+    ### parámetro
         :path: ruta al archivo .xml
+    
+    ### return
+        datos tabulados como `pandas.DataFrame`
     '''
 
     # Carga de archivo .xml
@@ -304,18 +308,16 @@ def largos(df):
 
 def xml_doi(path:str, doi_enc:pd.DataFrame) -> str:
     '''
-    Agregar la etiqueta correspondiente al doi* a los
-    registros que lo requieren en
-    ".//record/electronic-resource-num/style":
+    Agregar el DOI a cada etiqueta correspondiente 
+    (`.//record/electronic-resource-num/style`), creándola de ser necesario.
 
-    `<electronic-resource-num>`  
-    `   <style face="normal" font="default" size="100%">*</style>`  
-    `</electronic-resource-num>`
     ### parámetros
-        :path: `str` ruta a archivo .xml
+        :path: `str` ruta a archivo .xml  
         :doi_enc: `pandas.DataFrame` con columnas "nregistro" y "doi_nuevo"
+
     ### return
-    Retorna el árbol xml en forma de `str`
+
+        Retorna el árbol xml en forma de `str`
     '''
     # Cargar el archivo XML
     tree = ET.parse(path)
@@ -355,13 +357,34 @@ def xml_doi(path:str, doi_enc:pd.DataFrame) -> str:
     return ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
 
 def elim_indent(xml_str:str) -> str:
+    '''
+    Borra toda ocurrencia de `\\n` en la cadena, y consecutivamente
+    todo espacio entre dos caracteres `>` y `<` 
+    (saltos y espacios entre todas las etiquetas).
+
+    ### parámetros
+        :xml_str: `str` cadena con estructura xml indentada
+
+    ### return
+        `str` con estructura xml compacta, sin espacios entre
+        ninguna etiqueta
+
+
+    '''
     xml_noindent = "".join(xml_str.split("\n"))
     xml_format = re.sub(r'>\s+<', '><', xml_noindent)
 
     return xml_format
 
 def guardar_xml(xml_str:str, path_salida:str):
-    # Guardar el archivo XML modificado
+    '''
+    Guardar el `str` con la estructura XML correctamente indentada
+    como archivo .xml
+
+    ### parámetros
+        :xml_str: `str` cadena formateada como xml
+        :path_salida: `str` ruta al nuevo archivo .xml
+    '''
     try:
         # tree.write(path_salida, encoding='utf-8', xml_declaration=True)
         with open(path_salida, "w", encoding="utf-8") as file:

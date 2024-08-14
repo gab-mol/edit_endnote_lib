@@ -2,7 +2,7 @@
 
 ***---EN PROCESO---***
 
-La idea de este pequeño proyecto fue encontrar un método automatizado para agregar a los registros de una biblioteca de [Endnote](https://endnote.com/) sus respectivos **DOI** (Digital Object Identifier).
+La idea de este pequeño proyecto fue encontrar un método automatizado para agregar a los registros de una biblioteca de [EndNote](https://endnote.com/) (EndNote 20 v.: 20.2.1) sus respectivos **DOI** (Digital Object Identifier).
 
 Archivo principal de ejecución: **[main.ipynb](main.ipynb)**. Contiene la orquestación del pipeline y su documentación paso por paso.
 

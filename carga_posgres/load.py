@@ -34,22 +34,22 @@ def tabla_referencias(conn):
     cur.execute(f'''
         CREATE TABLE IF NOT EXISTS {ESQUEMA}.{TABLA} ( 
             nregistro INTEGER NOT NULL PRIMARY KEY,        
-            autores VARCHAR(3228),
-            año VARCHAR(154),
-            ciudad VARCHAR(199),
-            doi VARCHAR(125),
-            editores VARCHAR(139),
-            editorial VARCHAR(139),
-            numero VARCHAR(14),
-            páginas VARCHAR(33),
-            revis_ab1 VARCHAR(68),
-            revis_ab2 VARCHAR(61),
-            revista_full VARCHAR(120),
-            tipo VARCHAR(24),
-            titl_sec VARCHAR(178),
-            titulo VARCHAR(440),
-            url VARCHAR(232),
-            volumen VARCHAR(47)
+            autores TEXT,
+            año TEXT,
+            ciudad TEXT,
+            doi TEXT,
+            editores TEXT,
+            editorial TEXT,
+            numero TEXT,
+            páginas TEXT,
+            revis_ab1 TEXT,
+            revis_ab2 TEXT,
+            revista_full TEXT,
+            tipo TEXT,
+            titl_sec TEXT,
+            titulo TEXT,
+            url TEXT,
+            volumen TEXT
         );'''
     )
     conn.commit()

@@ -2,17 +2,13 @@ __pycache__
 journals
 prueba_generar
 biblio_actualz_py.Data
-busqueda_journ.txt
-df_m25.csv
+*.csv
+*.xml
+*.txt
+*.enl
 pr.py
-biblio_actualz_py.enl
 practicando1.py
 practicando2.py
-data.xml
-output.txt
-Endnote 09-08-24.xml
-cred.txt
-main.py
 pr.xml
-Endnote 09-08-24 MOD.xml
-mod_pr.xml
+
+

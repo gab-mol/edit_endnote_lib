@@ -1,6 +1,5 @@
 '''
 Cargar datos extraídos desde .xml a base de datos postgreSQL local.
-
 '''
 import psycopg2 as db
 
@@ -100,11 +99,6 @@ def load_to(conn, df:pd.DataFrame,esquema:str, tabla:str, ver_q=False):
     cur.execute(query)
     conn.commit()
 
-
-
-
-
-
 def query_sql(conn, query:str, cerrar=False):
     '''Envoltura de métodos de `psycopg2` para
     ejecución de consultas y retorno de datos.
@@ -112,7 +106,7 @@ def query_sql(conn, query:str, cerrar=False):
     ### parámetros
 
     :query: `str` Consulta en SQL, terminada en `;`
-    :cerrar: `bool` cierra conexión por defecto
+    :cerrar: `bool` cerrar conexión
 
     ### return 
     `list[tuple]` (cada una es un registro/fila)
@@ -121,10 +115,9 @@ def query_sql(conn, query:str, cerrar=False):
     cur = conn.cursor()
     cur.execute(query)
     conn.commit()
-    
+
     try:
         resp = cur.fetchall()
-        return resp
     except:
         print("!!!  no results to fetch")
         resp = None
@@ -133,9 +126,8 @@ def query_sql(conn, query:str, cerrar=False):
 
     return resp
 
-
-def colnames(esquema:str, tabla:str):
-    res = query_sql(f'''SELECT column_name
+def colnames(conn, esquema:str, tabla:str) -> list[str]:
+    res = query_sql(conn,f'''SELECT column_name
         FROM information_schema.columns
         WHERE table_schema = '{esquema}'
         AND table_name = '{tabla}'
@@ -155,16 +147,3 @@ def registros_a_df(registros:list[tuple], cols:list[str]) -> pd.DataFrame:
             data[cols[j]].append(registros[i][j])
 
     return pd.DataFrame(data)
-
-
-
-if __name__ == "__main__":
-
-    query_sql(connec(),'''
-        create table if not exists endnote.busq_doi_todo (
-            nregistro INTEGER NOT NULL PRIMARY KEY,        
-            titulo VARCHAR(440),
-            doi_nuevo VARCHAR(125)
-            );''', 
-            cerrar = False
-    )

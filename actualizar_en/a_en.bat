@@ -1,3 +1,4 @@
+REM Experimento con archivos .enw para carga a Endnote (descartado)
 @echo off
 for %%f in (..\actualizar_en\journals\*.enw) do (
     start "" "%%f"

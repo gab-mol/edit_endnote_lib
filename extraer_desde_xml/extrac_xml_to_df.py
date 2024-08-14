@@ -302,7 +302,7 @@ def largos(df):
         lambda col: col.astype(str).apply(len).max())
     print(max_lengths)
 
-def xml_doi(path:str):
+def xml_doi(path:str, doi_enc:pd.DataFrame, path_salida:str):
     '''
     Agregar la etiqueta correspondiente al doi* a los
     registros que lo requieren en
@@ -312,60 +312,66 @@ def xml_doi(path:str):
     `   <style face="normal" font="default" size="100%">*</style>`  
     `</electronic-resource-num>`  
     '''
-    tree = ET.parse(path)
-    root = tree.getroot()
-
     # Cargar el archivo XML
     tree = ET.parse(path)
     root = tree.getroot()
 
-    # Iterar sobre todos los elementos <book> en el XML
-    for book in root.findall('.//book'):
-        # Verificar si el elemento <isbn> existe
-        isbn = book.find('isbn')
-        
-        if isbn is None:
-            # Si no existe, agregar la etiqueta <isbn> con un valor predeterminado
-            new_isbn = ET.Element('isbn')
-            new_isbn.text = 'Sin ISBN'
-            book.append(new_isbn)
+    record_iter = root.findall('.//record')
+
+    nregistro = doi_enc["nregistro"].to_list()
+
+    for nr in nregistro:
+        doi = doi_enc[doi_enc["nregistro"] == nr].iloc[0]["doi_nuevo"]
+
+        for rec in record_iter:
+            # match entre rec-number y nregistro
+            rec_num = rec.find('rec-number')
+            if rec.text and str(nr) == rec_num.text:
+                doi_rec = rec.find('electronic-resource-num')
+                if doi_rec is None:
+                # Si falta <electronic-resource-num>
+                    # etiqueta style
+                    nuev_sty = ET.Element('style')
+                    nuev_sty.set("face","normal")
+                    nuev_sty.set("font","default")
+                    nuev_sty.set("size","100%")
+                    nuev_sty.text = doi
+
+                    # etiqueta electronic-resource-num
+                    nuev_ern = ET.Element('electronic-resource-num')
+
+                    # agregar
+                    nuev_ern.append(nuev_sty)
+                    rec.append(nuev_ern)
+                else:
+                    doi_style = doi_rec.find('style')
+                    doi_style.text = doi
 
     # Guardar el archivo XML modificado
-    tree.write('extraer_desde_xml/mod_pr.xml', encoding='utf-8', xml_declaration=True)
+    try:
+        tree.write(path_salida, encoding='utf-8', xml_declaration=True)
+        print("GUARDADO:", path_salida)
+    except:
+        print("Error al guardar!")
+
+
+
 
 if __name__ == "__main__":
 
     # PRUEBAS MANIPIULACIÓN DE ARCHIVOS XML
-
-    tree = ET.parse("extraer_desde_xml/mod_pr.xml")
+    xmlpr ="extraer_desde_xml\pr.xml"
+    tree = ET.parse(xmlpr)
     root = tree.getroot()
 
-    for b in root.findall('.//book'):
-        print(b.find('title').text)
-        isbn = b.find('isbn')
-        if isbn is not None:
-            print("\t",isbn.text)
-            isbn.set("atr_n0","valor atrn00")
-            isbn.set("atr_n1","valor atrn11")
-            isbn.set("atr_n2","valor atrn22")
-        else:
-            print("\tno isbn")
+    dfpr = pd.DataFrame({
+        "nregistro":[2892, 2879],
+        "doi_nuevo":["10.doidoidoidoidoidoi","10.17957/IJAB/15.1092"]
+    })
 
-        xml_str = ET.tostring(root, encoding='utf-8')
-        parsed_xml = minidom.parseString(xml_str)
-        pretty_xml_str = parsed_xml.toprettyxml(indent="  ")
-        with open("extraer_desde_xml/mod_pr2.xml", "w", encoding='utf-8') as f:
-            f.write(pretty_xml_str)
+    xml_doi(xmlpr, dfpr, "extraer_desde_xml\pr_act.xml")
 
-    # tree.write('extraer_desde_xml/mod_pr2.xml', encoding='utf-8', xml_declaration=True)
+    
+    # for b in root.findall('.//record'):
+    #     print(b.find('rec-number').text)
 
-    # # Usar minidom para formatear el XML
-    # with open("extraer_desde_xml/Endnote 09-08-24.xml", 'r', encoding='utf-8') as file:
-    #     xml_str = file.read()
-
-    # parsed_xml = minidom.parseString(xml_str)
-    # formatted_xml = parsed_xml.toprettyxml(indent="  ")
-
-    # # Guardar el XML formateado en el archivo final
-    # with open('extraer_desde_xml/Endnote 09-08-24 MOD.xml', 'w', encoding='utf-8') as file:
-    #     file.write(formatted_xml)

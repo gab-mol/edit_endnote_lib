@@ -1,14 +1,13 @@
 __pycache__
 journals
 prueba_generar
-biblio_actualz_py.Data
 *.csv
 *.xml
-*.txt
+log_*.txt
 *.enl
+*.enw
 pr.py
 practicando1.py
 practicando2.py
-pr.xml
 
 

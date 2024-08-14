@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
 import pandas as pd
 from pprint import pprint
-from xml.dom import minidom
+import re
 
 
 # Extracción
@@ -302,7 +302,7 @@ def largos(df):
         lambda col: col.astype(str).apply(len).max())
     print(max_lengths)
 
-def xml_doi(path:str, doi_enc:pd.DataFrame, path_salida:str):
+def xml_doi(path:str, doi_enc:pd.DataFrame) -> str:
     '''
     Agregar la etiqueta correspondiente al doi* a los
     registros que lo requieren en
@@ -310,7 +310,12 @@ def xml_doi(path:str, doi_enc:pd.DataFrame, path_salida:str):
 
     `<electronic-resource-num>`  
     `   <style face="normal" font="default" size="100%">*</style>`  
-    `</electronic-resource-num>`  
+    `</electronic-resource-num>`
+    ### parámetros
+        :path: `str` ruta a archivo .xml
+        :doi_enc: `pandas.DataFrame` con columnas "nregistro" y "doi_nuevo"
+    ### return
+    Retorna el árbol xml en forma de `str`
     '''
     # Cargar el archivo XML
     tree = ET.parse(path)
@@ -347,9 +352,20 @@ def xml_doi(path:str, doi_enc:pd.DataFrame, path_salida:str):
                     doi_style = doi_rec.find('style')
                     doi_style.text = doi
 
+    return ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
+
+def elim_indent(xml_str:str) -> str:
+    xml_noindent = "".join(xml_str.split("\n"))
+    xml_format = re.sub(r'>\s+<', '><', xml_noindent)
+
+    return xml_format
+
+def guardar_xml(xml_str:str, path_salida:str):
     # Guardar el archivo XML modificado
     try:
-        tree.write(path_salida, encoding='utf-8', xml_declaration=True)
+        # tree.write(path_salida, encoding='utf-8', xml_declaration=True)
+        with open(path_salida, "w", encoding="utf-8") as file:
+            file.write(xml_str)
         print("GUARDADO:", path_salida)
     except:
         print("Error al guardar!")

@@ -23,6 +23,9 @@ def buscar_doi_v0(titulo:str, nitems=1, siml=.8, terminal=False) -> dict | None:
         `dict` con datos disponibles | `None`
     '''
     if terminal: print("\n# BUSCAR:", titulo,"#")
+    if titulo is None: 
+        if terminal:print("!!! Búsqueda abortada.")
+        return None
     res = cr.works(query = titulo)
     items = res['message']['items']
 

@@ -75,8 +75,12 @@ def load_all(conn, df:pd.DataFrame, ver_q=False):
     if ver_q:print(query)
 
     # Ejecutar la consulta
-    cur.execute(query)
-    conn.commit()
+    try:
+        cur.execute(query)
+        conn.commit()
+        print(f"> INSERT INTO {ESQUEMA}.{TABLA} VALUES (<<df>>) <")
+    except:
+        print(f"> ERROR en commit a {ESQUEMA}.{TABLA} <")
 
 def load_to(conn, df:pd.DataFrame,esquema:str, tabla:str, ver_q=False):
     cur = conn.cursor()

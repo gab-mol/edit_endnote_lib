@@ -10,5 +10,6 @@ log_*.txt
 pr.py
 practicando1.py
 practicando2.py
+*.sql
 
 

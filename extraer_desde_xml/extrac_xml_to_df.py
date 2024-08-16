@@ -326,14 +326,17 @@ def xml_doi(path:str, doi_enc:pd.DataFrame):
     record_iter = root.findall('.//record')
 
     nregistro = doi_enc["nregistro"].to_list()
-
+    
     for nr in nregistro:
+        
         doi = doi_enc[doi_enc["nregistro"] == nr].iloc[0]["doi_nuevo"]
-
+        print(nr, doi)
         for rec in record_iter:
+            
             # match entre rec-number y nregistro
             rec_num = rec.find('rec-number')
-            if rec.text and str(nr) == rec_num.text:
+            print(str(nr), rec_num.text, str(nr) == rec_num.text)
+            if str(nr) == rec_num.text:
                 doi_rec = rec.find('electronic-resource-num')
                 if doi_rec is None:
                 # Si falta <electronic-resource-num>
@@ -350,15 +353,11 @@ def xml_doi(path:str, doi_enc:pd.DataFrame):
                     # agregar
                     nuev_ern.append(nuev_sty)
                     rec.append(nuev_ern)
-                    root.append(rec)
                 else:
                     doi_style = doi_rec.find('style')
                     doi_style.text = doi
 
-        tree_act = ET.ElementTree(root)
-        root_act = tree_act.getroot()
-
-    return root_act
+    return root
 
 def elim_indent(root) -> str:
     '''
@@ -404,18 +403,39 @@ def guardar_xml(xml_str:str, path_salida:str):
 if __name__ == "__main__":
 
     # PRUEBAS MANIPIULACIÓN DE ARCHIVOS XML
-    xmlpr ="extraer_desde_xml\pr.xml"
+    xmlpr ="extraer_desde_xml\pr_grabar.xml"
     tree = ET.parse(xmlpr)
     root = tree.getroot()
 
     dfpr = pd.DataFrame({
-        "nregistro":[2892, 2879],
-        "doi_nuevo":["10.doidoidoidoidoidoi","10.17957/IJAB/15.1092"]
+        "nregistro":[11, 2364, 3525],
+        "doi_nuevo":["10.doidoidoidoidoidoi","10.doidoidoidoidoidoi2","10.doidoidoidoidoidoi3"]
     })
+    print(xmlpr)
 
-    xml_doi(xmlpr, dfpr, "extraer_desde_xml\pr_act.xml")
+    def ver(root):
+        record_iter = root.findall('.//record')
+        for rec in record_iter:
+            nreg = rec.find('rec-number').text
+            doi = rec.find('electronic-resource-num')
+            doi = doi.find('style').text if doi is not None else "falta"
+            print(nreg, doi)
+            
+        print("\n\n")
+    ver(root)
 
+    root2 = xml_doi(xmlpr, dfpr)
+
+    print("\n\n")
+    xml_s = elim_indent(root2)
+    guardar_xml(xml_s, "extraer_desde_xml\pr_grabar_EDIT.xml")
     
+
+    xmlpr2 ="extraer_desde_xml\pr_grabar_EDIT.xml"
+    tree2 = ET.parse(xmlpr2)
+    rootver = tree2.getroot()
+    print(xmlpr2)
+    ver(rootver)
     # for b in root.findall('.//record'):
     #     print(b.find('rec-number').text)
 

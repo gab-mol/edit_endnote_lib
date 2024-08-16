@@ -111,3 +111,7 @@ def verificar_doi(doi:str) -> str:
 
     return item[0]
   
+if __name__ == "__main__":
+    ver = buscar_doi_v0("Cold induced changes in lipid, protein and carbohydrate levels in the tropical insect Gromphadorhina coquereliana", terminal = True)
+
+    print(ver['DOI'])

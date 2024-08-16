@@ -306,7 +306,7 @@ def largos(df):
         lambda col: col.astype(str).apply(len).max())
     print(max_lengths)
 
-def xml_doi(path:str, doi_enc:pd.DataFrame) -> str:
+def xml_doi(path:str, doi_enc:pd.DataFrame):
     '''
     Agregar el DOI a cada etiqueta correspondiente 
     (`.//record/electronic-resource-num/style`), creándola de ser necesario.
@@ -350,13 +350,17 @@ def xml_doi(path:str, doi_enc:pd.DataFrame) -> str:
                     # agregar
                     nuev_ern.append(nuev_sty)
                     rec.append(nuev_ern)
+                    root.append(rec)
                 else:
                     doi_style = doi_rec.find('style')
                     doi_style.text = doi
 
-    return ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
+        tree_act = ET.ElementTree(root)
+        root_act = tree_act.getroot()
 
-def elim_indent(xml_str:str) -> str:
+    return root_act
+
+def elim_indent(root) -> str:
     '''
     Borra toda ocurrencia de `\\n` en la cadena, y consecutivamente
     todo espacio entre dos caracteres `>` y `<` 
@@ -371,6 +375,7 @@ def elim_indent(xml_str:str) -> str:
 
 
     '''
+    xml_str = ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
     xml_noindent = "".join(xml_str.split("\n"))
     xml_format = re.sub(r'>\s+<', '><', xml_noindent)
 

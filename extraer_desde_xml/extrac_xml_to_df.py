@@ -1,3 +1,11 @@
+'''
+Interacción con archivos XML exportados desde EndNote.
+
+Extracción de campos requeridos y conversión a `pandas.Dataframe`.  
+Edición de etiquetas con los DOIs y formateo final de archivo .xml para 
+importar nuevamente a EndNote.
+'''
+
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
 import pandas as pd
@@ -5,7 +13,6 @@ from pprint import pprint
 import re
 
 
-# Extracción
 def extr_opc1(root):
     '''DEPRECATED
     Para practicar usando la impresión por terminal y pprint'''

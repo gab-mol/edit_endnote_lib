@@ -333,7 +333,7 @@ def xml_doi(path:str, doi_enc:pd.DataFrame) -> str:
         for rec in record_iter:
             # match entre rec-number y nregistro
             rec_num = rec.find('rec-number')
-            if rec.text and str(nr) == rec_num.text:
+            if str(nr) == rec_num.text:
                 doi_rec = rec.find('electronic-resource-num')
                 if doi_rec is None:
                 # Si falta <electronic-resource-num>

@@ -1,12 +1,13 @@
 '''
-Cargar datos extraídos desde .xml a base de datos postgreSQL local.
+Interacción con base de datos postgreSQL local creada para el proyecto.  
+(Ver "Carga a base de datos (postgreSQL)" en main.ipynb)
 '''
 import psycopg2 as db
 
 import pandas as pd
 
 def connec():
-    '''Conexión con base de datos de referencias.'''
+    '''Conexión con base de datos del proyecto.'''
     conn = db.connect(
         dbname="endnote_refs",
         user="editor_en",
@@ -18,8 +19,6 @@ def connec():
 
 TABLA = "referencias"
 ESQUEMA = "endnote"
-
-# cur = conn.cursor()
 
 def tabla_referencias(conn):
     '''
@@ -58,11 +57,20 @@ def tabla_referencias(conn):
 # CARGA
 
 def load_all(conn, df:pd.DataFrame, ver_q=False):
+    '''
+    Cargar dataframe extraído del archivo XML a base de datos.
+    (número de campos establecido para ser compatible con
+    tabla generada por `load.tabla_referencias`).
+
+    ### Parámetros
+        :conn: objeto de conexión con BD postgres
+        :df: `DataFrame` datos extraídos desde archivo de exportación XML
+        :ver_q: `bool` imprimir consulta SQL ejecutada
+    '''
     cur = conn.cursor()
     data = list()
 
-    for i, fila in df.iterrows():
-        # print("fila n:°",i)
+    for _, fila in df.iterrows():
         data.append(fila)
 
     args_str = ','.join(
@@ -83,11 +91,21 @@ def load_all(conn, df:pd.DataFrame, ver_q=False):
         print(f"> ERROR en commit a {ESQUEMA}.{TABLA} <")
 
 def load_to(conn, df:pd.DataFrame,esquema:str, tabla:str, ver_q=False):
+    '''
+    Cargar todos los registros de un `pandas.DataFrame` a una tabla de
+    postgres preexistente compatible.
+
+    ### Parámetros
+        :conn: objeto de conexión con BD postgres
+        :df: `DataFrame` datos a insertar
+        :esquema: `str` nombre del esquema de la tabla
+        :tabla: `str` nombre de la tabla
+        :ver_q: `bool` imprimir consulta SQL ejecutada
+    '''
     cur = conn.cursor()
     data = list()
 
-    for i, fila in df.iterrows():
-        # print("fila n:°",i)
+    for _, fila in df.iterrows():
         data.append(fila)
 
     placehold = "("+", ".join(["%s " for _ in range(len(df.columns))])+")"
@@ -131,6 +149,16 @@ def query_sql(conn, query:str, cerrar=False):
     return resp
 
 def colnames(conn, esquema:str, tabla:str) -> list[str]:
+    '''
+    Obtener nombres de columnas de tabla postgres.
+
+    ### Parámetros
+        :conn: objeto de conexión con BD postgres
+        :esquema: `str` nombre del esquema de la tabla
+        :tabla: `str` nombre de la tabla
+    ### return
+        `list[str]` de nombres
+    '''
     res = query_sql(conn,f'''SELECT column_name
         FROM information_schema.columns
         WHERE table_schema = '{esquema}'
@@ -140,7 +168,16 @@ def colnames(conn, esquema:str, tabla:str) -> list[str]:
     return [c[0] for c in res]
 
 def registros_a_df(registros:list[tuple], cols:list[str]) -> pd.DataFrame:
+    '''
+    Transformar lista de tuplas (=registro) a formato `pandas.DataFrame`.
 
+    ### Parámetros
+        :registros: `list[tuple]` datos a transformar
+        :cols: `list[str]` nombre de las columnas en el órden correcto
+    
+    ### return
+        Datos formateados como `pandas.DataFrame`.
+    '''
     data = dict()
 
     for c in cols:

@@ -5,6 +5,7 @@ La idea de este pequeño proyecto fue encontrar un método automatizado para agr
 Archivo principal de ejecución: **[main.ipynb](main.ipynb)**. Contiene la orquestación del pipeline y su documentación paso por paso.
 
 ## 1. Extraer datos desde .xml y cargarlos a una tabla postgreSQL
+(Compatible con PostgreSQL v.9.5 en adelante)
 ### Extracción: /[extraer_desde_Xml](extraer_desde_xml)
 Se usó la funcionalidad de exportación de Endnote para transformar toda la biblioteca a `.xml`.
 

@@ -1,3 +1,6 @@
+'''
+Utilidades relacionadas a los módulos `time` y `datetime`.
+'''
 import threading
 import time
 import datetime 

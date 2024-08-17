@@ -19,7 +19,7 @@ Uso de API de [CrossRef](https://search.crossref.org/), con librerias de python.
 Resultados de búsqueda almacenados temporalmente en BD postgreSQL.
 
 ## 3. Reinsertar todos los registros en una nueva biblioteca de Endnote
-Inicialmente se probó la generación de `.enw` para cada registro (Endnote los usa para insertar registros nuevos). Al final, se recurrió a la edición del archivo `.xml` de exportación, agregando las etiquetas correspondientes al doi (`electronic-resource-num`)  donde fueran necesarias ([`xml_doi`](extraer_desde_xml\extrac_xml_to_df.py))
+Inicialmente se probó la generación de `.enw` para cada registro (Endnote los usa para insertar registros nuevos). Al final, se recurrió a la edición del archivo `.xml` de exportación, agregando las etiquetas correspondientes al doi (`electronic-resource-num`)  donde fueran necesarias (`xml_doi`)
 
 ```
     <electronic-resource-num>
